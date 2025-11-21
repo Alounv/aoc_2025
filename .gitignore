@@ -1,0 +1,15 @@
+# Roc binaries
+day*/Solution
+day*/solution
+
+# Zig build artifacts
+.zig-cache/
+zig-out/
+
+# Other common binary extensions
+*.exe
+*.out
+*.o
+*.a
+*.so
+*.dylib

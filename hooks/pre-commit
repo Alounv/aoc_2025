@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+# Pre-commit hook to run Zig tests before committing
+#
+# To install this hook, run:
+#   cp hooks/pre-commit .git/hooks/pre-commit
+#   chmod +x .git/hooks/pre-commit
+#
+
+echo "Running Zig tests before commit..."
+
+# Run the test command
+zig build test
+
+# Capture the exit code
+TEST_EXIT_CODE=$?
+
+# If tests failed, prevent the commit
+if [ $TEST_EXIT_CODE -ne 0 ]; then
+    echo ""
+    echo "❌ Tests failed! Commit aborted."
+    echo "Fix the failing tests before committing."
+    exit 1
+fi
+
+echo "✅ All tests passed! Proceeding with commit."
+exit 0
