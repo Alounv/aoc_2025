@@ -13,3 +13,4 @@ zig-out/
 *.a
 *.so
 *.dylib
+*.claude
