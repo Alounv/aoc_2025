@@ -28,10 +28,27 @@ fn solveP1(comptime max: usize, input: []const u8) u64 {
     return part1;
 }
 
-fn solveP2(input: []const u8) !i64 {
-    _ = input;
-    // TODO: Implement part 2 solution
-    return 0;
+fn walk(comptime max: usize, grid: *[max][max]u8, cache: *[max][max]?u64, y: usize, x: usize) u64 {
+    // Base case
+    if (y >= max) return 1;
+    // Check cache
+    if (cache[y][x]) |result| return result;
+    // Recursive case
+    const result = switch (grid[y][x]) {
+        '.' => walk(max, grid, cache, y + 1, x),
+        '^' => walk(max, grid, cache, y + 1, x + 1) + walk(max, grid, cache, y + 1, x - 1),
+        else => unreachable,
+    };
+    // Save in cache
+    cache[y][x] = result;
+    return result;
+}
+
+fn solveP2(comptime max: usize, input: []const u8) u64 {
+    var grid = utils.getGrid(max, input);
+    const x = std.mem.indexOfScalar(u8, &grid[1], 'S').?;
+    var cache = [_][max]?u64{[_]?u64{null} ** max} ** max;
+    return walk(max, &grid, &cache, 2, x);
 }
 
 // ============================================================================
@@ -39,7 +56,7 @@ fn solveP2(input: []const u8) !i64 {
 // ============================================================================
 
 const EXPECTED_PART1: i64 = 1651;
-const EXPECTED_PART2: i64 = 0;
+const EXPECTED_PART2: i64 = 108924003331749;
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -50,7 +67,7 @@ pub fn main() !void {
     defer allocator.free(content);
 
     const part1 = solveP1(143, content);
-    const part2 = try solveP2(content);
+    const part2 = solveP2(143, content);
 
     // Verify expected results
     if (part1 != EXPECTED_PART1) {
@@ -111,6 +128,6 @@ test "part2 example" {
         \\...............
     ;
 
-    const result = try solveP2(example_input);
-    try std.testing.expectEqual(@as(i64, 0), result);
+    const result = solveP2(143, example_input);
+    try std.testing.expectEqual(@as(u64, 40), result);
 }
